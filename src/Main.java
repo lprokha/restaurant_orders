@@ -1,12 +1,10 @@
-import com.google.gson.internal.bind.util.ISO8601Utils;
-import domain.Customer;
+import domain.Item;
 import domain.Order;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.summingDouble;
+import static java.util.stream.Collectors.*;
 
 public class Main {
 
@@ -19,10 +17,9 @@ public class Main {
         //var orders = RestaurantOrders.read("orders_1000.json").getOrders();
         //var orders = RestaurantOrders.read("orders_10_000.json").getOrders();
 
-//        runFirstTaskMethods(orders);
+        runFirstTaskMethods(orders);
 
         runSecondTaskMethods(orders);
-
 
         // протестировать ваши методы вы можете как раз в этом файле (или в любом другом, в котором вам будет удобно)
     }
@@ -63,18 +60,56 @@ public class Main {
     }
 
     private static void runSecondTaskMethods(List<Order> orders) {
+        System.out.println("=".repeat(70));
         printOrders(getOrdersGroupedByCustomers(orders));
-        getCustomersWithTheirTotals(orders).forEach((k, v) -> System.out.printf("CUSTOMER: %-20s | TOTAL: %4.2f%n", k, v));
+
+        System.out.println("=".repeat(70));
+        printMaps(getCustomersWithTheirTotals(orders), "CUSTOMER: %-20s | TOTAL: %4.2f%n");
+
+        System.out.println("=".repeat(70));
+        System.out.println("---- CUSTOMER WITH THE HIGHEST TOTAL: ----");
+        getCustomerWithMaximalTotalSum(orders);
+
+        System.out.println("=".repeat(70));
+        System.out.println("---- CUSTOMER WITH THE LOWEST TOTAL: ----");
+        getCustomerWithMinimalTotalSum(orders);
+
+        System.out.println("=".repeat(70));
+        System.out.println("---- ITEMS SOLD: ----");
+        printMaps(getItemsGroupedByAmount(orders), "NAME: %-20s | AMOUNT SOLD: %4d%n");
     }
 
-    private static Map<String, List<Order>> getOrdersGroupedByCustomers(List<Order> orders) {
-        return orders.stream()
-                .collect(groupingBy(order -> order.getCustomer().getFullName()));
+    private static Map<String, Integer> getItemsGroupedByAmount(List<Order> orders) {
+        return orders.stream().flatMap(order -> order.getItems().stream())
+                .collect(groupingBy(Item::getName, summingInt(Item::getAmount)));
+    }
+
+    private static void getCustomerWithMinimalTotalSum(List<Order> orders) {
+        var worstCustomer = getCustomersWithTheirTotals(orders).entrySet().stream()
+                .min(Comparator.comparingDouble(Map.Entry::getValue))
+                .get();
+        System.out.printf("NAME: %-20s | TOTAL: %4.2f%n", worstCustomer.getKey(), worstCustomer.getValue());
+    }
+
+    private static void getCustomerWithMaximalTotalSum(List<Order> orders) {
+        var bestCustomer = getCustomersWithTheirTotals(orders).entrySet().stream()
+                .max(Comparator.comparingDouble(Map.Entry::getValue))
+                .get();
+        System.out.printf("NAME: %-20s | TOTAL: %4.2f%n", bestCustomer.getKey(), bestCustomer.getValue());
+    }
+
+    private static void printMaps(Map<String, ?> customersWithTotals, String fmt) {
+        customersWithTotals.forEach((k, v) -> System.out.printf(fmt, k, v));
     }
 
     private static Map<String, Double> getCustomersWithTheirTotals(List<Order> orders) {
         return orders.stream()
                 .collect(groupingBy(order -> order.getCustomer().getFullName(), summingDouble(Order::getTotal)));
+    }
+
+    private static Map<String, List<Order>> getOrdersGroupedByCustomers(List<Order> orders) {
+        return orders.stream()
+                .collect(groupingBy(order -> order.getCustomer().getFullName()));
     }
 
     private static void printOrders(Map<String, List<Order>> orders) {
