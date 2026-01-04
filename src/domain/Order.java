@@ -85,4 +85,16 @@ public class Order {
                 , homeDelivery
                 , total);
     }
+
+    public String toStrWithoutCustomer() {
+        return String.format("ITEMS:%n %-25s | %-5s | %-15s | %2s %n%s%n%s%nHOME DELIVERY: %s%n   TOTAL: %.2f%n"
+                , "Name"
+                ,"Price"
+                , "Type"
+                , "Amount"
+                , "-".repeat(62)
+                ,itemsToStr()
+                , homeDelivery
+                , total);
+    }
 }
