@@ -14,34 +14,46 @@ public class Main {
         //var orders = RestaurantOrders.read("orders_1000.json").getOrders();
         //var orders = RestaurantOrders.read("orders_10_000.json").getOrders();
 
-        printOrders(orders);
-//        System.out.println("=".repeat(70));
-//        printOrders(getOrdersWithMaxTotal(orders, 5));
-//
-//        System.out.println("=".repeat(70));
-//        printOrders(getOrdersWithMinTotal(orders, 3));
-
-//        System.out.println("=".repeat(70));
-//        printOrders(getOrdersWithHomeDelivery(orders));
-//
-//        System.out.println("=".repeat(70));
-//        printOrders(getMaxAndMinTotalFromHomeDeliveryOrders(orders));
-
-//        System.out.println("=".repeat(70));
-//        printOrders(getAboveMinAndBelowMaxTotalOrders(orders, 70, 90));
-
-//        System.out.println("=".repeat(70));
-//        System.out.println("Общая сумма всех заказов: " + sumOfAllOrdersTotals(orders));
-
-        System.out.println("=".repeat(70));
-        printEmails(getAllCustomersUniqueEmails(orders));
-
-
-
+        runFirstTaskMethods(orders);
 
 
 
         // протестировать ваши методы вы можете как раз в этом файле (или в любом другом, в котором вам будет удобно)
+    }
+
+    private static void runFirstTaskMethods(List<Order> orders) {
+        printOrders(orders);
+
+        System.out.println("=".repeat(70));
+        int n = 5;
+        System.out.println(n + " ORDERS WITH MAXIMAL TOTAL:\n");
+        printOrders(getOrdersWithMaxTotal(orders, n));
+
+        System.out.println("=".repeat(70));
+        int m = 3;
+        System.out.println(m + " ORDERS WITH MINIMAL TOTAL:\n");
+        printOrders(getOrdersWithMinTotal(orders, m));
+
+        System.out.println("=".repeat(70));
+        System.out.println("HOME DELIVERY ORDERS:\n");
+        printOrders(getOrdersWithHomeDelivery(orders));
+
+        System.out.println("=".repeat(70));
+        System.out.println("HOME DELIVERY ORDERS WITH MAXIMAL AND MINIMAL TOTAL:\n");
+        printOrders(getMaxAndMinTotalFromHomeDeliveryOrders(orders));
+
+        System.out.println("=".repeat(70));
+        double minOrderTotal = 70;
+        double maxOrderTotal = 90;
+        System.out.println("ORDERS WITH TOTALS BETWEEN " + minOrderTotal + " AND " + maxOrderTotal + ":\n"  );
+        printOrders(getAboveMinAndBelowMaxTotalOrders(orders, minOrderTotal, maxOrderTotal));
+
+        System.out.println("=".repeat(70));
+        System.out.println("TOTAL OF ALL ORDERS: " + sumOfAllOrdersTotals(orders));
+
+        System.out.println("=".repeat(70));
+        System.out.println("CUSTOMERS' EMAILS:\n");
+        printEmails(getAllCustomersUniqueEmails(orders));
     }
 
     private static void printOrders(List<Order> orders) {
