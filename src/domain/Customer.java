@@ -40,4 +40,8 @@ public class Customer {
     //----------------------------------------------------------------------
 
 
+    @Override
+    public String toString() {
+        return String.format(" %-25s | %-40s ", fullName, email);
+    }
 }
