@@ -59,4 +59,8 @@ public class Item {
     //----------------------------------------------------------------------
 
 
+    @Override
+    public String toString() {
+        return String.format(" %-25s | %-5s | %-15s | %2s ", name, price, type, amount);
+    }
 }
