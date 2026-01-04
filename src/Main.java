@@ -1,7 +1,12 @@
+import com.google.gson.internal.bind.util.ISO8601Utils;
+import domain.Customer;
 import domain.Order;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.summingDouble;
 
 public class Main {
 
@@ -14,8 +19,9 @@ public class Main {
         //var orders = RestaurantOrders.read("orders_1000.json").getOrders();
         //var orders = RestaurantOrders.read("orders_10_000.json").getOrders();
 
-        runFirstTaskMethods(orders);
+//        runFirstTaskMethods(orders);
 
+        runSecondTaskMethods(orders);
 
 
         // протестировать ваши методы вы можете как раз в этом файле (или в любом другом, в котором вам будет удобно)
@@ -54,6 +60,32 @@ public class Main {
         System.out.println("=".repeat(70));
         System.out.println("CUSTOMERS' EMAILS:\n");
         printEmails(getAllCustomersUniqueEmails(orders));
+    }
+
+    private static void runSecondTaskMethods(List<Order> orders) {
+        printOrders(getOrdersGroupedByCustomers(orders));
+        getCustomersWithTheirTotals(orders).forEach((k, v) -> System.out.printf("CUSTOMER: %-20s | TOTAL: %4.2f%n", k, v));
+    }
+
+    private static Map<String, List<Order>> getOrdersGroupedByCustomers(List<Order> orders) {
+        return orders.stream()
+                .collect(groupingBy(order -> order.getCustomer().getFullName()));
+    }
+
+    private static Map<String, Double> getCustomersWithTheirTotals(List<Order> orders) {
+        return orders.stream()
+                .collect(groupingBy(order -> order.getCustomer().getFullName(), summingDouble(Order::getTotal)));
+    }
+
+    private static void printOrders(Map<String, List<Order>> orders) {
+        orders.entrySet().stream()
+                .forEach(customerListEntry -> {
+                    System.out.println("=".repeat(70));
+                    System.out.println("CUSTOMER: " + customerListEntry.getKey() + "\n--- ORDERS: ---");
+
+                    customerListEntry.getValue().forEach(order -> System.out.println(order.toStrWithoutCustomer()));
+                    System.out.println();
+                });
     }
 
     private static void printOrders(List<Order> orders) {
