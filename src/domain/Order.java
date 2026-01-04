@@ -56,6 +56,33 @@ public class Order {
     //----------------------------------------------------------------------
 
     public void calculateTotal() {
-        throw new NotImplementedException("Вам надо реализовать этот метод!");
+        total = items.stream()
+                .mapToDouble(item -> item.getPrice() * item.getAmount())
+                .sum();
+    }
+
+    public String itemsToStr() {
+        StringBuilder sb = new StringBuilder();
+        for (Item item : items) {
+            sb.append(item.toString()).append("\n");
+        }
+        return sb.toString();
+    }
+
+    @Override
+    public String toString() {
+        return String.format("CUSTOMER:%n %-25s | %-40s %n%s%n%s%n%nITEMS:%n %-25s | %-5s | %-15s | %2s %n%s%n%s%nHOME DELIVERY: %s%n   TOTAL: %.2f%n"
+                , "Full Name"
+                , "Email"
+                , "-".repeat(62)
+                , customer
+                , "Name"
+                ,"Price"
+                , "Type"
+                , "Amount"
+                , "-".repeat(62)
+                ,itemsToStr()
+                , homeDelivery
+                , total);
     }
 }
