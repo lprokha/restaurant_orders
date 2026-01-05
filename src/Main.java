@@ -14,12 +14,14 @@ public class Main {
         // выберите любое количество заказов, какое вам нравится.
 
         var orders = RestaurantOrders.read("orders_100.json").getOrders();
-        //var orders = RestaurantOrders.read("orders_1000.json").getOrders();
-        //var orders = RestaurantOrders.read("orders_10_000.json").getOrders();
+//        var orders = RestaurantOrders.read("orders_1000.json").getOrders();
+//        var orders = RestaurantOrders.read("orders_10_000.json").getOrders();
 
         runFirstTaskMethods(orders);
 
         runSecondTaskMethods(orders);
+
+        runThirdTaskMethods(orders);
 
         // протестировать ваши методы вы можете как раз в этом файле (или в любом другом, в котором вам будет удобно)
     }
@@ -29,54 +31,78 @@ public class Main {
 
         System.out.println("=".repeat(70));
         int n = 5;
-        System.out.println(n + " ORDERS WITH MAXIMAL TOTAL:\n");
+        System.out.println("\n" + n + " ORDERS WITH MAXIMAL TOTAL:\n");
         printOrders(getOrdersWithMaxTotal(orders, n));
 
         System.out.println("=".repeat(70));
         int m = 3;
-        System.out.println(m + " ORDERS WITH MINIMAL TOTAL:\n");
+        System.out.println("\n" + m + " ORDERS WITH MINIMAL TOTAL:\n");
         printOrders(getOrdersWithMinTotal(orders, m));
 
         System.out.println("=".repeat(70));
-        System.out.println("HOME DELIVERY ORDERS:\n");
+        System.out.println("\nHOME DELIVERY ORDERS:\n");
         printOrders(getOrdersWithHomeDelivery(orders));
 
         System.out.println("=".repeat(70));
-        System.out.println("HOME DELIVERY ORDERS WITH MAXIMAL AND MINIMAL TOTAL:\n");
+        System.out.println("\nHOME DELIVERY ORDERS WITH MAXIMAL AND MINIMAL TOTAL:\n");
         printOrders(getMaxAndMinTotalFromHomeDeliveryOrders(orders));
 
         System.out.println("=".repeat(70));
         double minOrderTotal = 70;
         double maxOrderTotal = 90;
-        System.out.println("ORDERS WITH TOTALS BETWEEN " + minOrderTotal + " AND " + maxOrderTotal + ":\n"  );
+        System.out.println("\nORDERS WITH TOTALS BETWEEN " + minOrderTotal + " AND " + maxOrderTotal + ":\n"  );
         printOrders(getAboveMinAndBelowMaxTotalOrders(orders, minOrderTotal, maxOrderTotal));
 
         System.out.println("=".repeat(70));
-        System.out.println("TOTAL OF ALL ORDERS: " + sumOfAllOrdersTotals(orders));
+        System.out.println("\nTOTAL OF ALL ORDERS: " + sumOfAllOrdersTotals(orders));
 
         System.out.println("=".repeat(70));
-        System.out.println("CUSTOMERS' EMAILS:\n");
+        System.out.println("\nCUSTOMERS' EMAILS:\n");
         printEmails(getAllCustomersUniqueEmails(orders));
     }
 
     private static void runSecondTaskMethods(List<Order> orders) {
         System.out.println("=".repeat(70));
+        System.out.println("\n---- ORDERS GROUPED BY CUSTOMERS: ----\n");
         printOrders(getOrdersGroupedByCustomers(orders));
 
         System.out.println("=".repeat(70));
+        System.out.println("\n---- CUSTOMERS' TOTALS: ----\n");
         printMaps(getCustomersWithTheirTotals(orders), "CUSTOMER: %-20s | TOTAL: %4.2f%n");
 
         System.out.println("=".repeat(70));
-        System.out.println("---- CUSTOMER WITH THE HIGHEST TOTAL: ----");
+        System.out.println("\n---- CUSTOMER WITH THE HIGHEST TOTAL: ----\n");
         getCustomerWithMaximalTotalSum(orders);
 
         System.out.println("=".repeat(70));
-        System.out.println("---- CUSTOMER WITH THE LOWEST TOTAL: ----");
+        System.out.println("\n---- CUSTOMER WITH THE LOWEST TOTAL: ----\n");
         getCustomerWithMinimalTotalSum(orders);
 
         System.out.println("=".repeat(70));
-        System.out.println("---- ITEMS SOLD: ----");
+        System.out.println("\n---- ITEMS SOLD: ----\n");
         printMaps(getItemsGroupedByAmount(orders), "NAME: %-20s | AMOUNT SOLD: %4d%n");
+    }
+
+    private static void runThirdTaskMethods(List<Order> orders) {
+        System.out.println("=".repeat(70));
+        System.out.println("\n---- CUSTOMERS' EMAILS GROUPED BY PRODUCTS THEY PURCHASED: ----\n");
+        printMapsWithSet(getEmailsThatPurchasedItem(orders));
+    }
+
+    private static void printMapsWithSet(Map<String, Set<String>> mapWithSet) {
+        Map<String, String> emailsByItemsForPrint = mapWithSet.entrySet().stream()
+                .collect(toMap(Map.Entry::getKey
+                        , stringSetEntry -> String.join(", ", stringSetEntry.getValue())));
+        printMaps(emailsByItemsForPrint, "NAME: %-20s | EMAILS: %s%n");
+    }
+
+    private static Map<String, Set<String>> getEmailsThatPurchasedItem(List<Order> orders) {
+        return orders.stream()
+                .flatMap(order -> order.getItems().stream()
+                        .map(item -> Map.entry(item.getName(), order.getCustomer().getEmail()))
+                )
+                .collect(groupingBy(Map.Entry::getKey,
+                        mapping(Map.Entry::getValue, toSet())));
     }
 
     private static Map<String, Integer> getItemsGroupedByAmount(List<Order> orders) {
@@ -119,7 +145,6 @@ public class Main {
                     System.out.println("CUSTOMER: " + customerListEntry.getKey() + "\n--- ORDERS: ---");
 
                     customerListEntry.getValue().forEach(order -> System.out.println(order.toStrWithoutCustomer()));
-                    System.out.println();
                 });
     }
 
